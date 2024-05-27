@@ -25,6 +25,7 @@ def get_open_ports(target, port_range, verbose = False):
 
         else:
             open_ports.append(i)
+        s.close()
     try:
         ipnum = socket.gethostbyname(target)
         print("open ports for "+target+" ("+ipnum+")")
