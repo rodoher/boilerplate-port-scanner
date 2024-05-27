@@ -2,7 +2,9 @@ import socket
 import common_ports
 
 def get_open_ports(target, port_range, verbose = False):
+    name = False
     if target[0].isdigit():
+
         try:
             socket.inet_aton(target)
 
@@ -10,6 +12,7 @@ def get_open_ports(target, port_range, verbose = False):
             return("Error: Invalid IP address")
 
     else:
+        name = True
         try:
             socket.gethostbyname(target)
         except:
@@ -21,20 +24,29 @@ def get_open_ports(target, port_range, verbose = False):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(1)
         if s.connect_ex((target, i)):
+            s.close()
             continue
 
         else:
             open_ports.append(i)
-        s.close()
-    try:
-        ipnum = socket.gethostbyname(target)
-        print("open ports for "+target+" ("+ipnum+")")
-    except:
-        hostname = socket.gethostbyaddr(target)
-        print("open ports for "+hostname[0]+" ("+target+")")
+            s.close()
+    text=""
+    if name is True:
+        try:
+            ipnum = socket.gethostbyname(target)
+            text+="Open ports for "+target+" ("+ipnum+")"
+        except:
+            return("Error: Invalid hostname")
+
+    else:
+        try:
+            hostname = socket.gethostbyaddr(target)
+            text+="Open ports for "+hostname[0]+" ("+target+")"
+        except:
+            return("Error: Invalid IP address")
 
     if verbose==True:
-        text = "PORT     SERVICE\n"
+        text += "\nPORT     SERVICE\n"
         for i in open_ports:
             val = common_ports.ports_and_services[i]
             text += str(i)+"       "+val+"\n"
