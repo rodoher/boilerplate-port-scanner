@@ -15,7 +15,7 @@ def get_open_ports(target, port_range, verbose = False):
         name = True
         try:
             socket.gethostbyname(target)
-        except:
+        except socket.error:
             return("Error: Invalid hostname")
 
 
@@ -43,13 +43,18 @@ def get_open_ports(target, port_range, verbose = False):
             hostname = socket.gethostbyaddr(target)
             text+="Open ports for "+hostname[0]+" ("+target+")"
         except:
-            return("Error: Invalid IP address")
+            text+="Open ports for "+target
 
     if verbose==True:
-        text += "\nPORT     SERVICE\n"
+        text += "\nPORT     SERVICE"
         for i in open_ports:
             val = common_ports.ports_and_services[i]
-            text += str(i)+"       "+val+"\n"
+            if i<100:
+                text += "\n"+str(i)+"       "+val
+            elif i<1000:
+                text += "\n"+str(i)+"      "+val
+            else:
+                text += "\n"+str(i)+"     "+val
 
         return (text)
     return(open_ports)
